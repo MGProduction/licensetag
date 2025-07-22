@@ -1,7 +1,7 @@
 # licensetag
 a python script to add/update license/version/last modified and other info to a set of source files
 
-it's possible to provide a different version of the same template based on source file extension 
+it's possible to provide a different version of the same template based on source file extension creating different files with each extension (while the .txt is the catchall)
 
 ```
 options:

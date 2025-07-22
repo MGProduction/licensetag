@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
-#  licensetag.py - this file is part of licensetag: add/update licence script  
+#  licensetag.py - this file is part of licensetag: add/update licence script
 #-------------------------------------------------------------------------------
 #  Author:        Marco Giorgini, marco.giorgini@gmail.com
 #  Creation date: 2025-07
-#  Last Modified: 2025-07-22 23:11:27
+#  Last Modified: 2025-07-22 23:23:44
 #-------------------------------------------------------------------------------
 #  Version:       0.7
 #-------------------------------------------------------------------------------
@@ -37,9 +37,14 @@ from string import Template
 from datetime import datetime, timedelta
 from collections import Counter
 
+EXCLUDED_DIRS = {"templates", "build", ".git"}
+
 def get_template_for_extension(template_base, ext):
     # e.g., mit + .py => mit.py
-    template_path = Path(template_base + ext)
+    template_path = Path(template_base + ext)    
+    if template_path.exists():
+        return template_path
+    template_path = Path(template_base + "." + ext)    
     if template_path.exists():
         return template_path
     fallback = Path(template_base + ".txt")
@@ -79,7 +84,7 @@ def load_template(template_path, name, substitutions):
 
 def is_comment_line(line):
     stripped = line.strip()
-    return any(stripped.startswith(prefix) for prefix in ("#", "#", "--", ";"))
+    return any(stripped.startswith(prefix) for prefix in ("#", "#", "//", "--", ";"))
     
 def has_license(lines):
     for line in lines[:20]:  # look only at the top section
@@ -125,20 +130,22 @@ def add_or_update_license(file_path, license_text, update=False):
 def process_folder(folder, template_base, extensions, substitutions, update):
     files_changed = 0
     change_counter = Counter()
-    for root, _, files in os.walk(folder):
+    for root, dirs, files in os.walk(folder):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
         for name in files:
             for ext in extensions:
                 if name.endswith(ext):
                     template_path = get_template_for_extension(template_base, ext)
                     license_text = load_template(template_path, name, substitutions)
                     file_path = os.path.join(root, name)
+                    print(file_path)
                     license_changed = add_or_update_license(file_path, license_text, update)
                     if not license_changed:
                         modified_changed = update_last_modified(file_path, max_age_minutes=30)
                     if license_changed or modified_changed:
                         change_counter[ext] += 1
                     break  
-    print("✅ Summary:")
+    print("Summary:")
     if change_counter:
         for ext, count in change_counter.items():
             print(f"  {count} file(s) updated with extension '{ext}'")
@@ -156,7 +163,8 @@ def main():
     parser.add_argument("-u","--projecturl", help="$projecturl variable in template")
     parser.add_argument("-y","--year",help="$year variable in template", default=datetime.now().strftime("%Y"))
     parser.add_argument("-cd","--creationdate",help="$creationdate variable in template", default=datetime.now().strftime("%Y-%m"))
-    parser.add_argument("--extensions",help="source file extension to consider", nargs="+", default=[".c",".h",".cc",".cpp",".py"])
+    parser.add_argument("-x","--extensions",help="source file extension to consider", nargs="+", default=[".c",".h",".cc",".cpp",".py"])
+    parser.add_argument("-d","--exclude-dirs", nargs="+", default=[], help="subdirectories to exclude from recursion")
     parser.add_argument("--update", help="update files with a previous license", action="store_true")
     args = parser.parse_args()
 
@@ -169,6 +177,9 @@ def main():
         "version": args.version,
         "creationdate": args.creationdate
     }
+    
+    if args.exclude_dirs:
+        EXCLUDED_DIRS = set(args.exclude_dirs)
 
     process_folder(args.folder, args.template, args.extensions, substitutions, args.update)
 

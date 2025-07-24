@@ -32,7 +32,10 @@ options:
 ```
 
 - you can have a template file or a template file AND a template_tail file (to have license splitted in two parts)
+- you can have a template.txt OR a template.<extension> where extension will match with your source file extension (so to have different license formatting for .c and .h files)
+- if <template>.txt has // they'll be changed in # when used in a .py file
 - you can update just Last Modified: / Version parts (using this tool again on the same source codes. Last Modified will be changed only on recent modified file in folders)
 - header / footer of source codes are scanned to seek (in starting/ending position - with comments) **license** or **copyright** keywords
+- default extensions scanning includes .c / .cpp / .h / .py (you can use -x flag to check for others)
 
 **use at your own risk** - backup your code before playing with this tool

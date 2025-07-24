@@ -18,6 +18,7 @@ options:
                         $version variable in template
   -p PROJECT, --project PROJECT
                         $project variable in template
+  --verbose             show changed file names
   -u PROJECTURL, --projecturl PROJECTURL
                         $projecturl variable in template
   -y YEAR, --year YEAR  $year variable in template
@@ -29,3 +30,9 @@ options:
                         subdirectories to exclude from recursion
   --update              update files with a previous license
 ```
+
+- you can have a template file or a template file AND a template_tail file (to have license splitted in two parts)
+- you can update just Last Modified: / Version parts (using this tool again on the same source codes. Last Modified will be changed only on recent modified file in folders)
+- header / footer of source codes are scanned to seek (in starting/ending position - with comments) **license** or **copyright** keywords
+
+**use at your own risk** - backup your code before playing with this tool

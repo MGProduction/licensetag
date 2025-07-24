@@ -3,6 +3,10 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+templates/private/
+
+.vscode/
+
 # C extensions
 *.so
 

@@ -5,7 +5,7 @@
 #  Creation date: 2025-07
 #  Last Modified: 2025-07-22 23:23:44
 #-------------------------------------------------------------------------------
-#  Version:       0.7
+#  Version:       0.7.5
 #-------------------------------------------------------------------------------
 #  MIT License
 #
@@ -265,18 +265,25 @@ def process_folder(folder, template_base, extensions, substitutions, update, ver
 
 def main():
     parser = argparse.ArgumentParser(description="Add or update license headers.")
+    
     parser.add_argument("-f","--folder", help="source files folder",required=True)
+    
     parser.add_argument("-t","--template", help="base name of the template, e.g. 'mit' -> mit.py, mit.c etc.", required=True)
+    
     parser.add_argument("-a","--author", help="$author variable in template",required=True)
     parser.add_argument("-m","--authoremail", help="$authoremail variable in template")
     parser.add_argument("-v","--version", help="$version variable in template", default="1.0")
     parser.add_argument("-p","--project", help="$project variable in template")
-    parser.add_argument("--verbose", help="show changed file names", action="store_true")
     parser.add_argument("-u","--projecturl", help="$projecturl variable in template")
+
     parser.add_argument("-y","--year",help="$year variable in template", default=datetime.now().strftime("%Y"))
     parser.add_argument("-cd","--creationdate",help="$creationdate variable in template", default=datetime.now().strftime("%Y-%m"))
+    
     parser.add_argument("-x","--extensions",help="source file extension to consider", nargs="+", default=[".c",".h",".cc",".cpp",".py"])
+    
     parser.add_argument("-d","--exclude-dirs", nargs="+", default=[], help="subdirectories to exclude from recursion")
+    
+    parser.add_argument("--verbose", help="show changed file names", action="store_true")
     parser.add_argument("--update", help="update files with a previous license", action="store_true")
     args = parser.parse_args()
 
